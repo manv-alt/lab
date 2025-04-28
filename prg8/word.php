@@ -1,83 +1,79 @@
 <?php
 session_start();
+
+function analyzeString($input_string) {
+    $input_string = strtolower($input_string);
+    return array_count_values(str_word_count($input_string, 1));
+}
+
+function displayWordFrequencies($word_counts) {
+    echo "<h3>Word Frequencies:</h3>";
+
+    if (!empty($word_counts)) {
+        foreach ($word_counts as $word => $count) {
+            echo "<p><strong>$word:</strong> $count times</p>";
+        }
+
+        $most_used_word = key($word_counts);
+        echo "<p><strong>The most used word is:</strong> $most_used_word (used {$word_counts[$most_used_word]} times)</p>";
+
+        $least_used_word = array_key_last($word_counts);
+        echo "<p><strong>The least used word is:</strong> $least_used_word (used {$word_counts[$least_used_word]} times)</p>";
+    } else {
+        echo "<p>No words found in the input string.</p>";
+    }
+}
+
+if (isset($_POST['analyze'])) {
+    $input_string = $_POST['input_string'];
+    if (!empty($input_string)) {
+        $word_counts = analyzeString($input_string);
+        $_SESSION['input_string'] = $input_string;
+        $_SESSION['word_counts'] = $word_counts;
+
+        displayWordFrequencies($word_counts);
+    } else {
+        echo "<p>Please enter a string to analyze and sort.</p>";
+    }
+}
+
+if (isset($_POST['sort_asc']) || isset($_POST['sort_desc'])) {
+    $input_string = isset($_SESSION['input_string']) ? $_SESSION['input_string'] : "";
+    $word_counts = isset($_SESSION['word_counts']) ? $_SESSION['word_counts'] : [];
+
+    if (!empty($input_string) && !empty($word_counts)) {
+        if (isset($_POST['sort_asc'])) {
+            asort($word_counts);
+        }
+
+        if (isset($_POST['sort_desc'])) {
+            arsort($word_counts);
+        }
+
+        displayWordFrequencies($word_counts);
+    } else {
+        echo "<p>Please enter a string to analyze and sort.</p>";
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 <body>
-    <h3>Word Frequency Analyzer</h3>
-    <form   method="post">
-         Enter a string: <input type="text" name="str" required>
-            <input type="submit"  name="abtn" value="Analyze Button">
-    </form>
-    <?php
-    if (isset($_POST['abtn'])) {
-         $words=trim($_POST['str']);
-         if(strlen($words)>0){
-            $words=explode(" ",$words);
-            $frequency=array();
-            foreach($words as $word){
-               $word=strtoupper(string: $word);
-               if(isset($frequency[$word])){
-                    $frequency[$word]+=1;
-               }else{
-                    $frequency[$word]=1;
-                }
-            }
-            $kary=$frequency;
-            $krary=$frequency;
-            $sary=$frequency;
-            $rary=$frequency;
-ksort($kary);
-ksort($krary);
-sort($sary);
-arsort($rary);
-$_SESSION["asc"]=$kary;
-$_SESSION["dsc"]=$krary;
-$_SESSION["rary"]=$rary;
-$_SESSION["max"]=$sary[count($sary)-1];
-$_SESSION["min"]=$sary[0];
-DisplayResult($frequency);
-         }
-        }
-    function DisplayResult($arr){
-        echo"<h3>Word frequency analyzer</h3>";
-        foreach($arr as $key=>$value){  
-            echo"$key: $value times<br>";
-        }
-        $ary=$_SESSION["rary"];
-        if(count($ary)>0){
-            $max=$_SESSION["max"];
-            $min=$_SESSION["min"];
-            foreach($ary as $key=>$value){
-                if($ary[$key]==$max){
-                    echo"<h3>The most used word is".$key."(used".$max."times)</h3>";
-                }
-                if($ary[$key]==$min){
-                    echo"<h3>Least used word is".$key."(used".$min."times)</h3>";
-                }
-            }
-            }
-        }
-        if(isset($_POST["asbtn"]))
-        {
-            $ary=$_SESSION["asc"];
-            DisplayResult($arr);
-        }
-        if(isset($_POST["dsbtn"]))
-        {
-            $ary=$_SESSION["dsc"];
-            DisplayResult($arr);
-        }
-    
-    ?>
-    <form method="post">
-        <input type="submit" name="asbtn" value="Ascending Order">
-        <input type="submit" name="dsbtn" value="Descending Order">
-    </form>
+
+<h2>Word Frequency Analyzer</h2>
+
+<form method="POST">
+    <label for="input_string">Enter a string:</label><br>
+    <input type="text" id="input_string" name="input_string" value="<?php echo isset($_SESSION['input_string']) ? $_SESSION['input_string'] : ''; ?>"><br><br>
+    <input type="submit" name="analyze" value="Analyze">
+    <input type="submit" name="sort_asc" value="Sort Ascending">
+    <input type="submit" name="sort_desc" value="Sort Descending">
+</form>
+
 </body>
 </html>
