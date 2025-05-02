@@ -11,6 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $res = $con->query($query1);
         if ($res) {
             echo "<script>window.alert('Feedback  Sumbitted');</script>";
-        }
+        }       
     }
 }
