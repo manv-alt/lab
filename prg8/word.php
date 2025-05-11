@@ -58,7 +58,7 @@ function DisplayResult($arr){
        $max = $_SESSION["max"];
         $min = $_SESSION["min"];
          foreach($ary as $key => $value){
-            if($ary[$key] == $max){
+            if($ary[$key] == $max)  {
                 echo "<h3>Most frequent word is" .$key. "(used".$max." times)</h3>";
             }
             if($ary[$key] == $min){
